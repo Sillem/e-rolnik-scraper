@@ -161,11 +161,13 @@ if __name__ == "__main__":
         
     forward_pass(cores, n_of_pages) #pobieranie działek do folderu exele
     
+    print("Zakończono główną część pobierania. Zaczynam uzupełniać brakujące arkusze.")
     #jakich dzialek nie pobralo?
     missing = list(set(range(1,n_of_pages+1)) - set([int(file.replace('.xlsx', '')) for file in os.listdir('exele')]))
     #nastąpi 10 prób pobrania działek które zostały
     for proba in range(10):
         if missing:
+            print(f"Brakuje {len(missing)} arkuszy. Trwa {proba} cykl pobierania.")
             fill_missing(cores, missing)
             missing = list(set(range(1,n_of_pages+1)) - set([int(file.replace('.xlsx', '')) for file in os.listdir('exele')]))
 
