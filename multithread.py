@@ -12,13 +12,17 @@ import json
 import re
 from datetime import datetime
 import os 
+import sys
+
 def get_update_date():
     """Funkcja która zwracać ma datę ostatniej aktualizacji działek.
     
     Ale za jednym zamachem pobieram liczbę podstron.
     """
+    print("Sprawdzanie wersji oraz liczby podstron do pobrania.")
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.page_load_strategy = 'none'
     chrome_path = ChromeDriverManager().install()
     chrome_service = Service(chrome_path)
@@ -47,6 +51,7 @@ def web_scrape(page):
     options = webdriver.ChromeOptions()
     options.page_load_strategy = 'none'
     options.add_argument("--headless=new")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     chrome_path = ChromeDriverManager().install()
     chrome_service = Service(chrome_path)
     driver = Chrome(options=options, service=chrome_service)
@@ -130,6 +135,18 @@ if __name__ == "__main__":
     na postawie "Działki z zasobu wrsp z dnia ##.##.#### R.", następnie zostanie wykonany jeden forward_pass
     a następnie uzupełnione braki na podstawie zawartości folderu exele
     """
+    print(sys.argv)
+    if len(sys.argv) != 2:
+        print("Podano za mało, bądź za dużo argumentów do programu. Podaj tylko liczbę rdzeni, na których chcesz przeprowadzać scraping.")
+        exit()
+    try:
+        cores = int(sys.argv[1])
+        if not cores in range(1, os.cpu_count()+1):
+            print("Podana liczba rdzeni jest zbyt duża, bądź zbyt mała. Zamykanie programu.")
+            exit()
+    except ValueError as error:
+        print("Podana wartość liczby rdzeni nie jest liczbą. Zamykanie programu.")
+        exit()
     new_date, n_of_pages = get_update_date()
     new_date = re.search("[0-9]{2}.[0-9]{2}.[0-9]{4}", new_date).group() #data ostatniej aktualizacji danych pobrana erolnika
     new_date = datetime.strptime(new_date, '%d.%m.%Y').date() #data do obiektu datetime.date
@@ -142,14 +159,14 @@ if __name__ == "__main__":
         print("Obecna baza jest najnowszą wersją")
         exit()
         
-    forward_pass(6, n_of_pages) #pobieranie działek do folderu exele
+    forward_pass(cores, n_of_pages) #pobieranie działek do folderu exele
     
     #jakich dzialek nie pobralo?
     missing = list(set(range(1,n_of_pages+1)) - set([int(file.replace('.xlsx', '')) for file in os.listdir('exele')]))
     #nastąpi 10 prób pobrania działek które zostały
     for proba in range(10):
         if missing:
-            fill_missing(6, missing)
+            fill_missing(cores, missing)
             missing = list(set(range(1,n_of_pages+1)) - set([int(file.replace('.xlsx', '')) for file in os.listdir('exele')]))
 
     #jak wszystko poszło po naszej myśli, nadpisujemy datę w pliku json
