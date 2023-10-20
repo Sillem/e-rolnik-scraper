@@ -1,6 +1,6 @@
 # e-rolnik scraper
 
- Skrypt wykorzystujący wielordzeniowość do pozyskiwania spisu wszystkich działek Skarbu Państwa z platfoym e-rolnik w formie .xlsx. Źródło danych to: [https://erolnik.gov.pl/#/dzialki/lista](https://erolnik.gov.pl/#/dzialki/lista)
+ Skrypt wykorzystujący wielordzeniowość do pozyskiwania spisu wszystkich działek Skarbu Państwa z platformy e-rolnik w formie .xlsx. Źródło danych to: [https://erolnik.gov.pl/#/dzialki/lista](https://erolnik.gov.pl/#/dzialki/lista)
 
 
 ## Instalacja
